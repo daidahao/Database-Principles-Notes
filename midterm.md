@@ -761,6 +761,219 @@ If **demonstrably unique**, no `distinct` wtih a `JOIN` (no need with a `IN()`).
 
 # Lecture 5
 
+### `NULL`s
+
+```sql
+select * from people where born >= 1970
+  and first_name not in
+  (select first_name
+  from people
+  where born < 1970
+    and first_name is not null)
+```
+
+### `WHERE` Correlated Query
+Correlated queries in the WHERE clause are used with the `(NOT) EXISTS` construct.
+
+**NEVER try to correlate an `IN()`!**
+
+`EXISTS`
+`NOT EXISTS`
+
+#### The films with at least one actor born in 1970 or later.
+```sql
+select distinct m.title
+from movies m
+where exists
+ (select null
+  from credits c
+       inner join people p
+          on p.peopleid = c.peopleid
+  where c.credited_as = 'A'
+    and p.born >= 1970
+    and c.movieid = m.movieid)
+```
+
+## Sorting Data
+
+### `ORDER BY`
+
+`order by col1 desc, col2 asc`
+
+`ASC` is the default and nobody uses it.
+
+Ordering depends on the **data type**.
+
+#### What about `NULL`?
+
+It depends on the DBMS.
+
+> SQL Server, MySQL and SQLite consider by default that nothing is smaller than everything.
+
+> DB2, Oracle and PostgreSQL that it's greater than anything.
+
+### Collation
+
+Local text sorting rules.
+
+### Advanced sorts
+
+Using `CASE .. END` to replace each code with a value that sorts as intended.
+
+```sql
+order by
+      case credited_as
+        when 'D' then 1
+        when 'P' then 2
+        when 'A' then 3
+end
+```
+
+### `LIMIT`
+
+PostgreSQL, MySQL, SQLite
+
+`limit 10`
+
+IBM DB2, ORACLE, PostgreSQL
+
+`fetch first 10 rows`
+
+SQL Server
+
+`select top 10 title, ...`
+
+> In Oracle, if you just want to keep the first ten rows, since the **rownum** of each row is assigned before the sort, the orered query must be nested.
+
+Oracle
+```sql
+select *
+from (select title,
+country,
+             year_released
+      from movies
+order by title) m where rownum <= 10
+```
+
+#### Third Page
+
+PostgreSQL, MySQL, SQLite
+
+```sql
+select title,
+       country,
+       year_released
+from movies
+order by title limit 10 offset 20
+```
+
+> If you are using with SQL Server or DB2 the equivalent of LIMIT, then there is no OFFSET. You must cheat.
+
+### Materialized Path
+
+Turning the "ancestry" into an attribute.
+
+![](midterm/mpath.png)
+
+![](midterm/post.png)
+
+#### Oracle
+
+Dynamic Ordering
+
+```sql
+select message, ....
+from forum_posts ...
+connect by answered_postid = prior postid
+start with answered_postid is null
+       and topicid = ...
+order siblings by postid
+```
+
+#### IBM DB2, SQL Server, Oracle
+Recursive queries
+
+```sql
+with q(postid, message) as (select postid, message
+      from forum_posts
+      where answered_postid is null
+        and topicid = ...
+union all
+      select f.postid, f.message
+      from forum_posts f
+inner join q
+on f.answered_postid = q.postid)
+select *
+from q
+```
+
+Recursive queries operate level by level from top to bottom.
+
+## Window Functions
+
+### Format
+
+Like scalar functions, they return a result for a single row; but like aggregate functions, this result is computed out of several rows.
+
+`func(parameters) over (magic clause)`
+
+### Aggregate Function as Window Function
+
+With DBMS products that support window funcIons, every aggregate function can be used as a window function.
+
+`min(year_released) over (partition by country)`
+
+Window functions always operate againts rows that belong to a result set.
+
+> One related characteristics is that they can only appear aler the SELECT, not in the WHERE clause, and there is nothing with them similar to HAVING with aggregate functions.
+
+### `OVER()`
+
+You can have an empty `OVER` clause to indicate that you want the result computed over all rows selected.
+
+`min(year_released) over()`
+
+> When there is an `ORDER BY` you cannot start returning rows before you have seen all of them. The same thing can be obtained with `CROSS JOIN` (also called a Cartesian join).
+
+### Ranking Reporting Function
+
+
+```sql
+over (order by ...)
+
+over (partition by col1, col2, ...
+      order by col3, col4, ...)
+```
+
+#### `row_number()`
+
+assigns distinct, sequential numbers to everyone.
+
+#### `rank()`
+
+assigns the same number to ties, but there is a gap in ranks.
+
+#### `dense_rank()`
+
+assigns the same number to ties, with no gap
+
+## Generating HTML
+
+`<tag></tag>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
