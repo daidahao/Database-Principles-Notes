@@ -450,7 +450,122 @@ case upper(color)
 end as color,
 ```
 
+NULL cannot be tested in a WHEN branch.
 
+## Useful Functions
+
+### Numerical Functions
+
+`round(3.141592, 3)` 3.142
+
+`trunc(3,141592, 3)` 3.141
+
+`floor()`
+`ceiling()`
+
+### String Functions
+
+`upper`
+`lower()`
+
+`substr('Citizen Kane'), 5, 3` `'zen'`
+
+`trim(' Oops ')` `'Oops'`
+
+`replace('Sheep', 'ee', 'i')` `'Ship'`
+
+`length()`
+
+### Date Functions
+
+![](midterm/datefunctions.png)
+
+### `cast(__ as __)`
+
+## `distinct`
+
+```sql
+select distinct country
+from movies
+```
+
+## Aggregate Functions
+
+aggregate function will aggregate all rows that share a feature and return a characteristic of each group of aggregated rows.
+
+### `GROUP BY`
+
+```sql
+select country, year_released, count(*) number_of_movies
+from movies
+group by country, year_released
+```
+
+You can also group on several columns. Every column that isn't an aggregate function and appears after `SELECT` must also appear after `GROUP BY`.
+
+- `count(*)` `count(col)`
+- `min(col)`
+- `max(col)`
+- `avg(col)`
+- `sum(col)`
+- `stddev()`
+
+> SQLite hasn't `stddev()`, which computes the standard deviaTon
+
+```sql
+select * from (
+   select country,
+          min(year_released) oldest_movie
+   from movies
+   group by country
+   ) earliest_movies_per_country
+where oldest_movie < 1940
+```
+
+### `HAVING`
+
+```sql
+select country,
+        min(year_released) oldest_movie
+from movies
+group by country
+having min(year_released) < 1940
+```
+
+`having country = 'us'` hurts performance.
+
+`where country = 'us'` is way more efficient.
+
+> When you apply a funcTon or operators to a null, with very few exceptions the result is null because the result of a transformation applied to something unknown is an unknown quantity.
+
+**Aggregate functions ignore `NULL`s.**
+
+Counting a mandatory column such as `BORN` will return the same value as `COUNT(*)`. The third count, though, will only return the number of dead people in the table.
+
+```sql
+select count(*) people_count,
+       count(born) birth_year_count,
+       count(died) death_year_count
+from people
+```
+
+`select count(distinct colname)`
+
+### How many people are both actors and directors?
+
+```sql
+select peopleid, count(*) as number_of_roles
+from (select distinct peopleid, credited_as
+    from credits
+    where credited_as in ('A', 'D')
+    ) all_actors_and_directors
+group by peopleid
+having count(*) = 2
+```
+
+# Lecture 4
+
+## `JOIN`
 
 
 
