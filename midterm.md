@@ -961,6 +961,155 @@ assigns the same number to ties, with no gap
 
 `<tag></tag>`
 
+# Lecture 6
+
+## HTML Charts
+
+...
+
+## SQL Subtleties
+
+SQL isn't fully relational.
+
+With SQL (at least with complex queries, and they occur a lot in reporting) you keep juggling between relational and non-relational features of the language.
+
+### Common Table Expressions
+
+#### `WITH`
+
+`with something as ...`
+
+### `LEFT OUTER JOIN`
+
+**"Filling the gaps"**
+
+```sql
+select x.year_released, count(m.movieid) as films
+from (select 1925 as year_released
+      union all select 1926
+      union all select 1927
+      union all select 1928
+      union all select 1929
+      union all select 1930
+      union all select 1931
+      union all select 1932
+      union all select 1933
+      union all select 1934) x
+    left outer join movies m
+    on m.year_released = x.year_released
+group by x.year_released
+-- There are various tricks for generating lists of values
+```
+
+### Interesting use of `min`/`max`
+
+All values are equal:
+
+`having min(...) = max(...)`
+
+### `exists` compared to `count`
+
+![](midterm/existscount.png)
+
+### Limiting damage
+
+Another interesAng use of window functions is limiting damage with runaway queries.
+
+```sql
+select ... ,
+        count(*) over () count
+from ...
+where ...
+  and rownum <= maxcnt + 1
+order by ...
+```
+
+## Fuzzy Searches
+
+### `soundex()`
+
+Basically you retain the first lemer, drop vowels, lemers that sound like vowels (w = oo), h (ofen silent), then replace similarly sounding consonents by the same digit, before eliminating one of two successive idenAcal digits.
+
+![](midterm/soundex.png)
+
+**Problem:** Strong Anglo-Saxon Bias
+
+## Thinking a Query
+
+Queries must be thought as successive layers, from the inside out.
+
+### 1. The Scope
+
+Identifying the tables we need.
+
+### 2. Aggregates
+
+We must perform them before joining when possible.
+
+### 3. Main Filter
+
+THE condition that defines the most precisely the subset of rows we want to retrieve.
+
+### 4. Core Joins
+
+Core joins are either the ones that contribute to filtering (not in that case) or that returns informatioon that you should return and that shall be here.
+
+### 5. Polish
+
+Additional information, ordering, etc. Make the result nicer.
+
+## Transaction
+
+`begin transaction`
+`start transaction`
+
+A transaction ends when you issue either `COMMIT` or `ROLLBACK`.
+
+### Data Change
+
+#### `UPDATE`
+
+What appears as an `update` may be in fact an `insert`.
+
+> In banking system, what is stored is operations, and balances are recomputed once in a while.
+
+#### `INSERT`
+
+Most products (exceptions are Oracle and SQLite) allow inserting several rows in one statement, with a comma- separated list of row data between parentheses.
+
+```sql
+insert into table_name
+  (column1, column2, ..., columnn)
+values  (value1, value2, ..., valuen),
+        ...
+        (valuep, valueq, ..., valuez)
+```
+
+If you omit a column in `insert`, the value inserted is the default one if defined, otherwise it will be `NULL`.
+
+```sql
+create table <table_name> (...
+             <column_name>    <data type>
+default <default_value> not null, ...)
+```
+
+If the column is nullable, nothing prevents you from explicitly inserting `NULL`, and the default value won't be used.
+
+## How to populate numerical identifiers
+
+Two approaches.
+
+### SEQUENCE
+
+Simply a number generator.
+
+IBM DB2, Oracle, SQL Server 2012, PostgreSQL
+
+`create sequence movie_seq`
+
+
+
+
 
 
 
