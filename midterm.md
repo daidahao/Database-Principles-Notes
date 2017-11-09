@@ -1107,35 +1107,152 @@ IBM DB2, Oracle, SQL Server 2012, PostgreSQL
 
 `create sequence movie_seq`
 
+# Lecture 7
+
+![](midterm/sequence.png)
+
+### Auto-Numbered Column
+
+SQL Server
+
+`create table movies (movieid int not null identity primary key)`
+
+PostgreSQL, MySQL
+
+`serial primary key`
+
+SQLite
+
+`integer primary key`
+
+> PostgreSQL actually creates a sequence behind the scene, which it "attaches" to the table so that dropping the table drops the sequence.
+
+> Oracle (since version 12, it wasn't possible before) can do it PostgreSQL style, but more explicitly.
+
+## Loading Data From a File
+
+Linux `Line 1\nLine 2`
+
+Windows `Line1\r\nLine2`
+
+### File Format
+
+- Comma Separated Values (CSV)
+- Tab-separated
+- Fixed-field Files
+- XML
+
+> When everything else fails, using a scripting language to generate INSERT statements is usually the simplest soluTon.
+
+## `UPDATE`
+
+Without a `WHERE` all rows are affected.
+
+```sql
+update table_name
+set column_name = new_value,
+    other_col = other_val,
+    ...
+where ...
+```
+
+`UPDATE` is a **SET** operation.
+
+- Updates in loops are WRONG.
+- Think massive operations.
+
+Like a join in a select, same issues with nulls and duplicates!
+
+> Oracle and DB2 both support subqueries returning several columns (SQLite also now).
+
+> SQL Server and PostgreSQL both support the same older-join type of syntax allowing to join the updated table to the one from which we are gerng data.
+
+> MySQL allows a join with the newer syntax.
+
+**It's usually forbidden to update a key - it's the identifier.** You cannot change an identifier. You can only **delete the row and insert another**.
+
+### Update or Insert
+
+SQL Server, Oracle
+
+`MERGE`
+
+A interesting operation would be to update a film we know, and insert it if we don't. That's the purpose of MERGE.
+
+MySQL
+
+`on duplicate key update`
+
+SQLite
+
+`insert or replace`
+
+#### Update then Insert
+
+When none of the above is available, you should try to update, and if nothing is affected insert.
+
+NEVER count first to see if the row is already here! It's useless work.
+
+## `DELETE`
+
+```sql
+delete from table_name
+where ...
+```
+
+If you omit the WHERE clause, then (as with `UPDATE`) the statement affects all rows and you **EMPTY** table_name!
+
+### `TRUNCATE`
+
+without a `WHERE` clause. Leave it to senior DBAs.
+
+```sql
+begin transaction
+
+commit
+```
+
+## SQL Programming
+
+### Functions
+
+```sql
+create function full_name(p_fname varchar, p_sname varchar)
+returns varchar
+as $$
+begin
+  return case
+          when p_fname is null then ''
+          else p_fname || ' '
+        end |
+        case position('(' in p_sname,)
+          when 0 then p_sname
+          else trim(')' from substr(p_sname,
+                                  position('(' in p_sname) + 1))
+                || ' '
+                || trim(substr(p_sname, 1,
+                                  position('(' in p_sname) - 1))
+          end;
+end;
+$$ language plpgsql;
+```
 
 
+```sql
+select full_name(first_name, surname) as name, born, died
+from people order by surname
+```
 
+### Procedural extensions to SQL
 
+```sql
+select col1, col2, ...
+into local_var1, local_var2, ...
+from ...
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#### Cursors
+"row variables"
 
 
 
