@@ -124,14 +124,6 @@ All about splitting
 
 Oates, Ellison, Miner - The founders of Oracle
 
-```sql
-select ...
-from ...
-where ...
-```
-
-`SELECT` is followed by the names of the columns you want to return, `FROM` by the name of the tables that you query, and `WHERE` by filtering conditions.
-
 ## Two Main Components of SQL
 
 ### Data Definition Language
@@ -254,10 +246,12 @@ BLOB is the binary equivalent of CLOB (BLOB means Binary Large Object).
 
 PostgreSQL calls the binary datatype BYTEA, don't ask me why.
 
-## NULL
+## `NULL`
 
 It indicates the absence of a value, because we don't yet
 know it, or because in that case the adribute is irrelevant, or because we haven't the slightest idea about what this should be.
+
+**For more on `NULL`, see Lecture 3.**
 
 ```sql
 create table people ( peopleid int not null,
@@ -359,6 +353,8 @@ There are only two ways to enter a date, **as a string** or **as the result of a
 
 `CURRENT_DATE` (no time) and `CURRENT_TIMESTAMP` (time included) are recognized by all products
 
+# Lecture 3
+
 ## `SELECT`
 
 `select * from movies` $\approx$ print table
@@ -366,6 +362,105 @@ There are only two ways to enter a date, **as a string** or **as the result of a
 > In a program, always name columns.
 
 **Restriction**
+
+
+```sql
+select ...
+from ...
+where ...
+```
+
+`SELECT` is followed by the names of the columns you want to return, `FROM` by the name of the tables that you query, and `WHERE` by filtering conditions.
+
+```sql
+select *
+from movies
+where country = 'us'
+  and year_released between 1940 and 1949
+```
+`and` is "stronger" than `or`
+
+- `=`
+- `<>` or `!=`
+- `<` `<=`
+- `>` `>=`
+
+Whenever you are comparing data of slightly different types, you should use functions that "cast" data types. It will avoid bad surprises.
+
+Another frequent mistake is with datetime values.
+
+```sql
+where issued >= `<Monday’s date>`
+  -- <Monday 00:00:00>
+  and issued <= `<Friday's date>`
+  -- <Friday 00:00:00>
+```
+
+### `IN()`
+
+```sql
+where country in ('us', 'gb')
+  and year_released between 1940 and 1949
+```
+
+`country not in ('us', 'gb')`
+
+### `LIKE`
+
+- `%` any number of characters, including none
+
+- `_` one and only one character
+
+```sql
+select * from movies
+  where title not like '%A%'
+    and title not like '%a%'
+```
+
+```sql
+select * from movies
+  where upper(title) not like '%A%'
+```
+
+> Not good to apply a function to a searched column.
+
+### `NULL`
+The only way to test `NULL`.
+
+`where column_name is null`
+
+`where column_name is not null`
+
+### Concatenating Strings
+
+`'hello' || ' world'` Most products
+
+`'hello' + ' world'` SQL Server
+
+`concat('hello', ' world')` MySQL
+
+Avoid applying functions to columns that are used for comparison.
+
+### `CASE .. END`
+```sql
+case upper(color)
+  when 'Y' then 'Color'
+  when 'N' then 'B&W'
+  else '?'
+end as color,
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
