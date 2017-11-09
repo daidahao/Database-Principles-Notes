@@ -567,6 +567,214 @@ having count(*) = 2
 
 ## `JOIN`
 
+```sql
+select title, country_name, year_released
+from movies
+  join countries
+    on country_code = country
+where country_code <> 'us'
+```
+
+### `USING`
+
+Not supported by SQL Server
+
+```sql
+select distinct first_name, surname
+from people
+  join credits
+    using (peopleid)
+where credited_as = 'D'
+```
+
+### Alias
+
+```sql
+select distinct p.first_name, p.surname
+from people p
+  join credits c
+    on c.peopleid = p.peopleid
+where credited_as = 'D'
+```
+
+### Self-join
+
+### `INNER JOIN`
+
+the regular join
+
+### `OUTER JOIN`
+
+Use `LEFT OUTER JOIN` only.
+
+CONTRARY TO WHAT HAPPENS WITH THE ORDINARY (inner) JOIN, ORDER IS IMPORTANT.
+
+### `COALESCE()`
+
+takes an indeterminate number of parameters and returns the first one that isn't `NULL`, available with all products.
+
+### Filter close to tables
+
+With LEFT OUTER JOINs, apply all condiIons before joining.
+
+#### British movie titles with director names when available?
+
+> It's not necessary to have a subquery of British films for MOVIES, but it is necessary to have a subquery that only returns directors.
+
+
+```sql
+select m.year_released, m.title,
+       p.first_name, p.surname
+from (select movieid, year_released, title
+      from movies
+      where country = 'gb') m
+left outer join (select movieid, peopleid
+                 from credits
+                 where credited_as = 'D') c
+             on c.movieid = m.movieid
+left outer join people p
+on p.peopleid = c.peopleid
+```
+
+## Filtering and Qualifying
+
+An outer join is always a qualifying join, unless it is associated with an IS `NULL` condiIon, meaning that not finding a match is significant.
+
+If a join is removed, MORE rows?
+
+- Yes -> Filtering
+- No -> Qualifying
+
+## Set Operations
+
+### `UNION`
+
+takes two result sets and combine them into a single result set.
+
+- must return the same number of columns,
+- the data types of corresponding columns must match.
+
+### `UNION ALL`
+
+### `INTERSECT`
+
+![](midterm/intersect.png)
+
+## `EXCEPT` / `MINUS`
+
+![](midterm/except.png)
+
+`intersect` -> `inner join`
+
+`except` -> `outer join`
+
+#### Find country codes that are both in movies and countries.
+
+```sql
+select distinct country
+from movies
+```
+
+#### Find countries for which we haven't any film.
+```sql
+select country_code
+from countries
+except
+select distinct country
+from movies
+```
+
+```sql
+select c.country_code
+from countries c
+      left outer join
+          (select distinct country
+           from movies) m
+      on m.country = c.country_code
+ where m.country is null
+```
+
+## SUBQUERY
+
+### Correlation
+
+```sql
+select m.title, m.year_released,
+        (select c.country_name
+         from countries c
+         where c.country_code = m.country)
+            as country_name
+from movies m
+where m.country <> 'us'
+```
+
+> Strictly speaking, a subquery afer the SELECT is more equivalent to a LEFT OUTER JOIN.
+
+```sql
+select m.title,
+       c.country_name
+from movies m
+     left outer join countries c
+          on c.country_code = m.country
+where m.country <> 'us'
+```
+
+**A subquery in the FROM cannot be correlated.**
+
+`from` clause **uncorrelated**
+
+`select` list **correlated**
+
+`where` clause **uncorrelated** or **correlated**
+
+### `IN()`
+
+```sql
+in (select col
+    from ...
+    where ...)
+```
+
+```sql
+select country, year_released, title
+from movies
+where country in
+       (select country_code
+        from countries
+        where continent = 'EUROPE')
+```
+
+Some products (Oracle, DB2, PostgreSQL with some twisting) even allow comparing a set of column values (the correct word is "tuple") to the result of a subquery.
+
+```sql
+(col1, col2) in
+          (select col3, col4
+           from t
+           where ...)
+```
+
+`IN()` means an implicit DISTINCT in the subquery.
+
+If **demonstrably unique**, no `distinct` wtih a `JOIN` (no need with a `IN()`).
+
+![](midterm/uniquejoin.png)
+
+# Lecture 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
