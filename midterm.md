@@ -848,9 +848,7 @@ SQL Server
 Oracle
 ```sql
 select *
-from (select title,
-country,
-             year_released
+from (select title, country, year_released
       from movies
 order by title) m where rownum <= 10
 ```
