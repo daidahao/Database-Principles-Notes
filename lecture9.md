@@ -166,10 +166,65 @@ Slower query to retrieve the same data = Fewer simultaneous users served
 - User Interface
 - Security
 
+# Lab 9 Privileges and View Update
 
+## Privileges
 
+`grant <right> to <account>`
 
+`revoke <right> from <account>`
 
+Data Control Language
 
+Privileges fall into two categories:
+
+- System Rights
+
+give users the right to issue DDL commands and change the structure of the database.
+
+- Table Rights
+
+privileges to access and change the data.
+
+```sql
+grant select, insert on tablename
+to accountname
+
+revoke privilege on tablename
+from accountname
+
+-- All products have a way to grant a (low) privilege to everybody,
+-- existing as well as future users.
+grant select, insert on tablename
+to public
+```
+
+The UPDATE privilege can also be restricted to some columns only
+
+### How can views help with security?
+
+The trick is to use a view that only shows what people are supposed to see, and grant SELECT on the view and not on the table.
+
+Beware when you modify the definition of a view:
+
+If you simply drop and recreate it, you lose the privileges. Use `CREATE OR REPLACE`
+
+**In many cases, view update is simply impossible.**
+
+In some cases, view update is quite possible.
+
+There is no problem if the view update maps to a simple table update.
+
+There is one special constraint, though, that exists for views: `WITH CHECK OPTION`.
+
+It prevents you from making a change that will make a row disappear from the view (other than a DELETE)
+
+If updating the view directly is impossible, in many cases what should be applied to base tables is fairly obvious and can be performed by dedicated **stored procedures**.
+
+#### `instead of trigger`
+
+A speicial type of trigger
+
+It can be created on a view and lets you call a procedure "instead of" performing the triggering.
 
 ...
