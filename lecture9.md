@@ -166,7 +166,7 @@ Slower query to retrieve the same data = Fewer simultaneous users served
 - User Interface
 - Security
 
-# Lab 9 Privileges and View Update
+# Lab 10 Privileges and View Update
 
 ## Privileges
 
