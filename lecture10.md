@@ -84,4 +84,59 @@ Adding servers
 Neil Gunther’s
 Universal Law of Computational Scalability
 
+# Lab 11
+
+## Data Dictionary / Catalog
+
+A set of tables that contain information about the objects in the database.
+
+One catalog per database.
+
+### System tables
+
+Any database stores "metadata" that describes the tables in your database (and not only them).
+
+All client tools use this information to let you browse the structure of your tables
+
+Whenever you are issuing DDL commands, you are actually modifiying system tables. They must NEVER be directly changed.
+
+Read access to these tables is provided through system views.
+
+In these views you only see what YOU are allowed to see. Only administrators see everything.
+
+#### Most important tables for developers in `INFORMATION_SCHEMA` (PostgreSQL version)
+
+- `TABLES`
+- `COLUMNS`
+- `TABLE_CONSTRAINTS`
+- `CONSTRAINT_COLUMN_USAGE`
+- `KEY_COLUMN_USAGE`
+- `CHECK_CONSTRAINTS`
+
+`SEQUENCES` `ROUTINES` `TRIGGERS` `VIEWS`
+
+`VIEW_TABLE_USAGE`
+
+Those are all views you should be aware of.
+
+**Nothing on indexes not associated with PK or UNIQUE constraint!**
+
+Must look into `pg_catalog`.
+
+- `pg_index`
+- `pg_class`
+- `pg_attribute`
+
+#### Stuff mostly for DB administrators
+
+Roles and privileges
+
+- `pg_class` relates tables to files on disk
+- `pg_statistic` estimates used by the optimizer
+- `pg_settings` database parameters
+
+
+
+
+
 ...
