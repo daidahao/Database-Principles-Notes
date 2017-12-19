@@ -86,6 +86,10 @@ Universal Law of Computational Scalability
 
 # Lab 11
 
+[Slides](lecture10/Lab11.pdf)
+
+[INFORMATION_SCHEMA (PostgreSQL Version)](https://www.postgresql.org/docs/9.6/static/information-schema.html)
+
 ## Data Dictionary / Catalog
 
 A set of tables that contain information about the objects in the database.
