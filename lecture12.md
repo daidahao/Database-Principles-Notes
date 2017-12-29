@@ -1,5 +1,7 @@
 # Lecture 12
 
+(This lecture is quite challenging, at least for me. You may need to go through the original slides more carefully when reviewing.)
+
 - `INSERT`s are inserts
 - many `UPDATE`s aren't updates they are inserts
 - many `DELETE`s aren't deletes they are updates
