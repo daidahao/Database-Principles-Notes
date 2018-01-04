@@ -971,13 +971,41 @@ SQL isn't fully relational.
 
 With SQL (at least with complex queries, and they occur a lot in reporting) you keep juggling between relational and non-relational features of the language.
 
+Example:
+
+```sql
+select * from people
+where born >= 1970
+-- Relational
+```
+
+```sql
+select * from people
+where born >= 1970
+order by born
+-- Not relational, it's more like an array.
+```
+
+```sql
+select * from (
+  select * from people
+  where born >= 1970
+  order by born
+)
+where rownum <= 3
+-- Relational again.  
+-- Just the fact that you have three of the oldest people born in 1970 or later.
+```
+
 ### Common Table Expressions
+
+CTEs are simply a kind of factorization of subqueries.
 
 #### `WITH`
 
 `with something as ...`
 
-### `LEFT OUTER JOIN`
+### Interesting use of `LEFT OUTER JOIN`
 
 **"Filling the gaps"**
 
@@ -997,21 +1025,97 @@ from (select 1925 as year_released
     on m.year_released = x.year_released
 group by x.year_released
 -- There are various tricks for generating lists of values
+-- This will return 0 when we have no films for that year.
 ```
 
-### Interesting use of `min`/`max`
 
-All values are equal:
+
+### Interesting use of `MIN`/`MAX`
+
+All values are equal iff:
 
 `having min(...) = max(...)`
 
 ### `exists` compared to `count`
 
-![](midterm/existscount.png)
+If you only want to check whether the result of the count is zero or not, use `exists` rather than `count`.
+
+Reason: If you use `exists` and if the third row you inspect verifies the condition, you can stop here. If you use `count`, you must check all rows to find how many other rows also verify the condition.
+
+### GROUP BY: Multiple joins with the same table
+
+GROUP BY can sometimes replace self-joins, especially when a
+table appears many, many times.
+
+Aim: Display the names of cities between which you have flights with this (legitimate) query.
+
+```SQL
+select d.city, a.city, ...
+from flights f
+  inner join airports d
+  on d.code = f.departure
+  inner join airports a
+  on a.code = f.arrival
+-- Original version.
+```
+
+```SQL
+select a.city, ...
+from flights f
+  inner join airports a
+  on a.code in (f.departure,
+                f.arrival)
+-- Shown as:
+-- Paris
+-- Beijing
+```
+
+```SQL
+select case a.code
+  when f.departure then a.city
+  else null
+  end, ...
+from flights f
+  inner join airports a
+  on a.code in (f.departure,
+  f.arrival)
+-- Shown as:
+-- Paris
+--       Beijing
+```
+
+```SQL
+select max(case a.code
+  when f.departure then a.city
+  else null
+  end), ...
+from flights f
+  inner join airports a
+  on a.code in (f.departure,
+  f.arrival)
+group by ...
+-- Shown as:
+-- Paris Beijing
+```
+
+Apply MAX(), which ignores NULL, and you squash your two rows into one.
+
 
 ### Limiting damage
 
-Another interesAng use of window functions is limiting damage with runaway queries.
+Another Interesting use of window functions is limiting damage with runaway queries.
+
+Common way:
+
+```sql
+select count(*)
+from (original query)
+if count <= maxcnt:
+  original query
+```
+If the first query saves on data transfers and data rendition, it still executes the painful part. And if the query is OK, in practice you run it twice.
+
+Better way:
 
 ```sql
 select ... ,
@@ -1021,6 +1125,8 @@ where ...
   and rownum <= maxcnt + 1
 order by ...
 ```
+
+If we more than what we want, the ordered set may be wrong, but we won't display it so it doesn't matter. We're putting a cap over what may go wrong.
 
 ## Fuzzy Searches
 
