@@ -1138,6 +1138,18 @@ Basically you retain the first lemer, drop vowels, lemers that sound like vowels
 
 **Problem:** Strong Anglo-Saxon Bias
 
+### FULL-TEXT SEARCH
+
+Split a text in (pure) words, eliminate words that are too common, then associate each word with the film identifier.
+
+Example:
+
+Split `2001: a space odyssey` as:
+
+`2001` `~~a~~` `SPACE` `ODYSSEY`
+
+Then rank all movies related to these key words by hit number.
+
 ## Thinking a Query
 
 Queries must be thought as successive layers, from the inside out.
@@ -1152,11 +1164,11 @@ We must perform them before joining when possible.
 
 ### 3. Main Filter
 
-THE condition that defines the most precisely the subset of rows we want to retrieve.
+Use a main filter that defines the most precisely the subset of rows we want to retrieve.
 
 ### 4. Core Joins
 
-Core joins are either the ones that contribute to filtering (not in that case) or that returns informatioon that you should return and that shall be here.
+Core joins are either the ones that contribute to filtering (not in that case) or that returns information that you should return and that shall be here.
 
 ### 5. Polish
 
@@ -1164,18 +1176,41 @@ Additional information, ordering, etc. Make the result nicer.
 
 ## Transaction
 
-`begin transaction`
-`start transaction`
+`begin / start transaction`
 
 A transaction ends when you issue either `COMMIT` or `ROLLBACK`.
 
 ### Data Change
 
+Backup the database while it's active.
+
+Example:
+
+Bank records you may think:
+
+| Account type| Number| Balance|
+| ----------- | ----- | ------ |
+| CURRENT ACNT| 1234567  | 300.00 |
+| SAVINGS ACNT| 8765432  | 1600.00 |
+
+Real life bank records:
+
+| Account type| Number| Balance|Date|
+| ----------- | ----- | ------ |----|
+| CURRENT ACNT| 1234567  | 300.00 |1-Sep|
+| SAVINGS ACNT| 8765432  | 1600.00 |1-Sep|
+
+| Account type| Amount| Operation|Date|
+| ----------- | ----- | ------ |----|
+| 1234567 | 100.00  | DEBIT |3-Sep|
+| 8765432 | 100.00  | CREDIT |3-Sep|
+
+> In banking system, what is stored is operations, and balances are recomputed once in a while.
+
+
 #### `UPDATE`
 
 What appears as an `update` may be in fact an `insert`.
-
-> In banking system, what is stored is operations, and balances are recomputed once in a while.
 
 #### `INSERT`
 
@@ -1189,7 +1224,9 @@ values  (value1, value2, ..., valuen),
         (valuep, valueq, ..., valuez)
 ```
 
-If you omit a column in `insert`, the value inserted is the default one if defined, otherwise it will be `NULL`.
+> If you don't specify the columns, it's understood as "all the columns, in the same order as they are displayed when running select * ".
+
+> If you omit a column in `insert`, the value inserted is the default one if defined, otherwise it will be `NULL`.
 
 ```sql
 create table <table_name> (...
@@ -1197,11 +1234,20 @@ create table <table_name> (...
 default <default_value> not null, ...)
 ```
 
-If the column is nullable, nothing prevents you from explicitly inserting `NULL`, and the default value won't be used.
+> If I have a default value for a mandatory column, it will be OK to omit it in an insert statement.
+
+> If the column is nullable, nothing prevents you from explicitly inserting `NULL`, and the default value won't be used.
 
 ## How to populate numerical identifiers
 
-Two approaches.
+Querying the next value to use is a sure recipe for conflicts. Several users may get the same one:
+
+```SQL
+select max(movieid) + 1
+from movies
+```
+
+There are two approaches.
 
 ### SEQUENCE
 
