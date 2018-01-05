@@ -971,13 +971,41 @@ SQL isn't fully relational.
 
 With SQL (at least with complex queries, and they occur a lot in reporting) you keep juggling between relational and non-relational features of the language.
 
+Example:
+
+```sql
+select * from people
+where born >= 1970
+-- Relational
+```
+
+```sql
+select * from people
+where born >= 1970
+order by born
+-- Not relational, it's more like an array.
+```
+
+```sql
+select * from (
+  select * from people
+  where born >= 1970
+  order by born
+)
+where rownum <= 3
+-- Relational again.  
+-- Just the fact that you have three of the oldest people born in 1970 or later.
+```
+
 ### Common Table Expressions
+
+CTEs are simply a kind of factorization of subqueries.
 
 #### `WITH`
 
 `with something as ...`
 
-### `LEFT OUTER JOIN`
+### Interesting use of `LEFT OUTER JOIN`
 
 **"Filling the gaps"**
 
@@ -997,21 +1025,97 @@ from (select 1925 as year_released
     on m.year_released = x.year_released
 group by x.year_released
 -- There are various tricks for generating lists of values
+-- This will return 0 when we have no films for that year.
 ```
 
-### Interesting use of `min`/`max`
 
-All values are equal:
+
+### Interesting use of `MIN`/`MAX`
+
+All values are equal iff:
 
 `having min(...) = max(...)`
 
 ### `exists` compared to `count`
 
-![](midterm/existscount.png)
+If you only want to check whether the result of the count is zero or not, use `exists` rather than `count`.
+
+Reason: If you use `exists` and if the third row you inspect verifies the condition, you can stop here. If you use `count`, you must check all rows to find how many other rows also verify the condition.
+
+### GROUP BY: Multiple joins with the same table
+
+GROUP BY can sometimes replace self-joins, especially when a
+table appears many, many times.
+
+Aim: Display the names of cities between which you have flights with this (legitimate) query.
+
+```SQL
+select d.city, a.city, ...
+from flights f
+  inner join airports d
+  on d.code = f.departure
+  inner join airports a
+  on a.code = f.arrival
+-- Original version.
+```
+
+```SQL
+select a.city, ...
+from flights f
+  inner join airports a
+  on a.code in (f.departure,
+                f.arrival)
+-- Shown as:
+-- Paris
+-- Beijing
+```
+
+```SQL
+select case a.code
+  when f.departure then a.city
+  else null
+  end, ...
+from flights f
+  inner join airports a
+  on a.code in (f.departure,
+  f.arrival)
+-- Shown as:
+-- Paris
+--       Beijing
+```
+
+```SQL
+select max(case a.code
+  when f.departure then a.city
+  else null
+  end), ...
+from flights f
+  inner join airports a
+  on a.code in (f.departure,
+  f.arrival)
+group by ...
+-- Shown as:
+-- Paris Beijing
+```
+
+Apply MAX(), which ignores NULL, and you squash your two rows into one.
+
 
 ### Limiting damage
 
-Another interesAng use of window functions is limiting damage with runaway queries.
+Another Interesting use of window functions is limiting damage with runaway queries.
+
+Common way:
+
+```sql
+select count(*)
+from (original query)
+if count <= maxcnt:
+  original query
+```
+If the first query saves on data transfers and data rendition, it still executes the painful part. And if the query is OK, in practice you run it twice.
+
+Better way:
 
 ```sql
 select ... ,
@@ -1022,6 +1126,8 @@ where ...
 order by ...
 ```
 
+If we more than what we want, the ordered set may be wrong, but we won't display it so it doesn't matter. We're putting a cap over what may go wrong.
+
 ## Fuzzy Searches
 
 ### `soundex()`
@@ -1031,6 +1137,18 @@ Basically you retain the first lemer, drop vowels, lemers that sound like vowels
 ![](midterm/soundex.png)
 
 **Problem:** Strong Anglo-Saxon Bias
+
+### FULL-TEXT SEARCH
+
+Split a text in (pure) words, eliminate words that are too common, then associate each word with the film identifier.
+
+Example:
+
+Split `2001: a space odyssey` as:
+
+`2001` ~~a~~ `SPACE` `ODYSSEY`
+
+Then rank all movies related to these key words by hit number.
 
 ## Thinking a Query
 
@@ -1046,11 +1164,11 @@ We must perform them before joining when possible.
 
 ### 3. Main Filter
 
-THE condition that defines the most precisely the subset of rows we want to retrieve.
+Use a main filter that defines the most precisely the subset of rows we want to retrieve.
 
 ### 4. Core Joins
 
-Core joins are either the ones that contribute to filtering (not in that case) or that returns informatioon that you should return and that shall be here.
+Core joins are either the ones that contribute to filtering (not in that case) or that returns information that you should return and that shall be here.
 
 ### 5. Polish
 
@@ -1058,18 +1176,41 @@ Additional information, ordering, etc. Make the result nicer.
 
 ## Transaction
 
-`begin transaction`
-`start transaction`
+`begin / start transaction`
 
 A transaction ends when you issue either `COMMIT` or `ROLLBACK`.
 
 ### Data Change
 
+Backup the database while it's active.
+
+Example:
+
+Bank records you may think:
+
+| Account type| Number| Balance|
+| ----------- | ----- | ------ |
+| CURRENT ACNT| 1234567  | 300.00 |
+| SAVINGS ACNT| 8765432  | 1600.00 |
+
+Real life bank records:
+
+| Account type| Number| Balance|Date|
+| ----------- | ----- | ------ |----|
+| CURRENT ACNT| 1234567  | 300.00 |1-Sep|
+| SAVINGS ACNT| 8765432  | 1600.00 |1-Sep|
+
+| Account type| Amount| Operation|Date|
+| ----------- | ----- | ------ |----|
+| 1234567 | 100.00  | DEBIT |3-Sep|
+| 8765432 | 100.00  | CREDIT |3-Sep|
+
+> In banking system, what is stored is operations, and balances are recomputed once in a while.
+
+
 #### `UPDATE`
 
 What appears as an `update` may be in fact an `insert`.
-
-> In banking system, what is stored is operations, and balances are recomputed once in a while.
 
 #### `INSERT`
 
@@ -1083,7 +1224,9 @@ values  (value1, value2, ..., valuen),
         (valuep, valueq, ..., valuez)
 ```
 
-If you omit a column in `insert`, the value inserted is the default one if defined, otherwise it will be `NULL`.
+> If you don't specify the columns, it's understood as "all the columns, in the same order as they are displayed when running select * ".
+
+> If you omit a column in `insert`, the value inserted is the default one if defined, otherwise it will be `NULL`.
 
 ```sql
 create table <table_name> (...
@@ -1091,11 +1234,20 @@ create table <table_name> (...
 default <default_value> not null, ...)
 ```
 
-If the column is nullable, nothing prevents you from explicitly inserting `NULL`, and the default value won't be used.
+> If I have a default value for a mandatory column, it will be OK to omit it in an insert statement.
+
+> If the column is nullable, nothing prevents you from explicitly inserting `NULL`, and the default value won't be used.
 
 ## How to populate numerical identifiers
 
-Two approaches.
+Querying the next value to use is a sure recipe for conflicts. Several users may get the same one:
+
+```SQL
+select max(movieid) + 1
+from movies
+```
+
+There are two approaches.
 
 ### SEQUENCE
 
@@ -1140,7 +1292,7 @@ Windows `Line1\r\nLine2`
 - Fixed-field Files
 - XML
 
-> When everything else fails, using a scripting language to generate INSERT statements is usually the simplest soluTon.
+> When everything else fails, using a scripting language to generate INSERT statements is usually the simplest solution.
 
 ## `UPDATE`
 
@@ -1202,13 +1354,19 @@ If you omit the WHERE clause, then (as with `UPDATE`) the statement affects all 
 
 ### `TRUNCATE`
 
-without a `WHERE` clause. Leave it to senior DBAs.
+without a `WHERE` clause. Can't be rolled back. Leave it to senior DBAs.
+
+### Constraints means guarantee
+
+Once you have one movie, you are prevented from deleting the country otherwise the foreign key on table MOVIES would no longer work for films from that country.
 
 ```sql
 begin transaction
 
 commit
 ```
+
+
 
 ## SQL Programming
 
