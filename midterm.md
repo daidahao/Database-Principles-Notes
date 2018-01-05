@@ -1146,7 +1146,7 @@ Example:
 
 Split `2001: a space odyssey` as:
 
-`2001` `~~a~~` `SPACE` `ODYSSEY`
+`2001` ~~a~~ `SPACE` `ODYSSEY`
 
 Then rank all movies related to these key words by hit number.
 
@@ -1292,7 +1292,7 @@ Windows `Line1\r\nLine2`
 - Fixed-field Files
 - XML
 
-> When everything else fails, using a scripting language to generate INSERT statements is usually the simplest soluTon.
+> When everything else fails, using a scripting language to generate INSERT statements is usually the simplest solution.
 
 ## `UPDATE`
 
@@ -1354,13 +1354,19 @@ If you omit the WHERE clause, then (as with `UPDATE`) the statement affects all 
 
 ### `TRUNCATE`
 
-without a `WHERE` clause. Leave it to senior DBAs.
+without a `WHERE` clause. Can't be rolled back. Leave it to senior DBAs.
+
+### Constraints means guarantee
+
+Once you have one movie, you are prevented from deleting the country otherwise the foreign key on table MOVIES would no longer work for films from that country.
 
 ```sql
 begin transaction
 
 commit
 ```
+
+
 
 ## SQL Programming
 
