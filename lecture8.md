@@ -282,7 +282,7 @@ before insert / update
 for each row
 ```
 
-> SQL Server: midify by joining on inserted
+> SQL Server: modify by joining on inserted
 
 ### 2. Check complex rules
 
@@ -349,9 +349,9 @@ create table test
     unique(id) deferrable initially deferred);
 ```
 
-> Consistency andconstraintsarechecked AFTER the update, not DURING. During the update, the state is undefined.
+> Consistency and constraints are checked AFTER the update, not DURING. During the update, the state is undefined.
 
-**DON'T look at other rows of the modified table in for each row triggers.**
+**DON'T look at other rows of the modified table in `for each row` triggers.**
 
 **If you can, avoid triggers.**
 
