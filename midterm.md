@@ -876,7 +876,8 @@ Oracle
 select *
 from (select title, country, year_released
       from movies
-order by title) m where rownum <= 10
+      order by title) m
+where rownum <= 10
 ```
 
 #### Third Page
@@ -949,7 +950,7 @@ With DBMS products that support window funcIons, every aggregate function can be
 
 Window functions always operate againts rows that belong to a result set.
 
-> One related characteristics is that they can only appear aler the SELECT, not in the WHERE clause, and there is nothing with them similar to HAVING with aggregate functions.
+> One related characteristics is that they can only appear after the `SELECT`, not in the `WHERE` clause, and there is nothing with them similar to `HAVING` with aggregate functions.
 
 ### `OVER()`
 
@@ -961,6 +962,7 @@ You can have an empty `OVER` clause to indicate that you want the result compute
 
 ### Ranking Reporting Function
 
+With a ranking window function you MUST have an `ORDER BY` clause in the `OVER()` (you cannot have an empty `OVER()` clause). You can combine it with a `PARTITION BY` to order with groups.
 
 ```sql
 over (order by ...)
