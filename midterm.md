@@ -1343,7 +1343,7 @@ Like a join in a select, same issues with nulls and duplicates!
 
 > Oracle and DB2 both support subqueries returning several columns (SQLite also now).
 
-> SQL Server and PostgreSQL both support the same older-join type of syntax allowing to join the updated table to the one from which we are gerng data.
+> SQL Server and PostgreSQL both support the same older-join type of syntax allowing to join the updated table to the one from which we are getting data.
 
 > MySQL allows a join with the newer syntax.
 
@@ -1378,7 +1378,7 @@ delete from table_name
 where ...
 ```
 
-If you omit the WHERE clause, then (as with `UPDATE`) the statement affects all rows and you **EMPTY** table_name!
+If you omit the `WHERE` clause, then (as with `UPDATE`) the statement affects all rows and you **EMPTY** table_name!
 
 ### `TRUNCATE`
 
