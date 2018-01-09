@@ -1070,9 +1070,9 @@ If you only want to check whether the result of the count is zero or not, use `e
 
 Reason: If you use `exists` and if the third row you inspect verifies the condition, you can stop here. If you use `count`, you must check all rows to find how many other rows also verify the condition.
 
-### GROUP BY: Multiple joins with the same table
+### `GROUP BY`: Multiple joins with the same table
 
-GROUP BY can sometimes replace self-joins, especially when a
+`GROUP BY` can sometimes replace self-joins, especially when a
 table appears many, many times.
 
 Aim: Display the names of cities between which you have flights with this (legitimate) query.
@@ -1160,7 +1160,7 @@ If we more than what we want, the ordered set may be wrong, but we won't display
 
 ### `soundex()`
 
-Basically you retain the first lemer, drop vowels, lemers that sound like vowels (w = oo), h (ofen silent), then replace similarly sounding consonents by the same digit, before eliminating one of two successive idenAcal digits.
+Basically you retain the first lemer, drop vowels, lemers that sound like vowels (w = oo), h (ofen silent), then replace similarly sounding consonents by the same digit, before eliminating one of two successive identical digits.
 
 ![](midterm/soundex.png)
 
@@ -1252,9 +1252,9 @@ values  (value1, value2, ..., valuen),
         (valuep, valueq, ..., valuez)
 ```
 
-> If you don't specify the columns, it's understood as "all the columns, in the same order as they are displayed when running select * ".
+If you don't specify the columns, it's understood as "all the columns, in the same order as they are displayed when running select * ".
 
-> If you omit a column in `insert`, the value inserted is the default one if defined, otherwise it will be `NULL`.
+If you omit a column in `insert`, the value inserted is the default one if defined, otherwise it will be `NULL`.
 
 ```sql
 create table <table_name> (...
@@ -1262,9 +1262,9 @@ create table <table_name> (...
 default <default_value> not null, ...)
 ```
 
-> If I have a default value for a mandatory column, it will be OK to omit it in an insert statement.
+If I have a default value for a mandatory column, it will be OK to omit it in an insert statement.
 
-> If the column is nullable, nothing prevents you from explicitly inserting `NULL`, and the default value won't be used.
+If the column is nullable, nothing prevents you from explicitly inserting `NULL`, and the default value won't be used.
 
 ## How to populate numerical identifiers
 
