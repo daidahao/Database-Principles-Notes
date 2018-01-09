@@ -1252,7 +1252,7 @@ values  (value1, value2, ..., valuen),
         (valuep, valueq, ..., valuez)
 ```
 
-If you don't specify the columns, it's understood as "all the columns, in the same order as they are displayed when running select * ".
+If you don't specify the columns, it's understood as "all the columns, in the same order as they are displayed when running `select *` ".
 
 If you omit a column in `insert`, the value inserted is the default one if defined, otherwise it will be `NULL`.
 
