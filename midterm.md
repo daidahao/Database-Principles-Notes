@@ -50,7 +50,7 @@ First of all, you must know which data you need/want to manage. It depends on wh
 
 ### Film Database
 
-Duplicates are forbidden in relafonal tables.
+Duplicates are forbidden in relational tables.
 
 #### Key
 
@@ -58,7 +58,7 @@ What differentiates one row from another.
 
 Key cannot be changed.
 
-> For purely commercial reasons, though, it may be assumed that the combinafon ftle/country/year will be unique.
+> For purely commercial reasons, though, it may be assumed that the combinafon title/country/year of films will be unique.
 
 #### Primary Key
 
@@ -74,13 +74,13 @@ Most choice revolves along assessing whether an attribute is or can be considere
 
 ### Entity
 
-In a database model, you call "enfty" something that has a life ot its own. eg. people, films, countries.
+In a database model, you call "entity" something that has a life ot its own. eg. people, films, countries.
 
-Relafonships connect entities. They have no life of their own.
+Relationships connect entities. They have no life of their own.
 
 > If a film project is abandoned, there will be no rows for this film in CREDITS.
 
-An "Enfty Relafonship Diagram" (E/R Diagram) is a way to represent tables in a database (you onen have hundreds of tables in a diagram). Crow feet indicate **"cardinality"**.
+An "Enfty Relafonship Diagram" (E/R Diagram) is a way to represent tables in a database (you even have hundreds of tables in a diagram). Crow feet indicate **"cardinality"**.
 
 # Lecture 2
 
@@ -145,7 +145,7 @@ DELETE
 SELECT
 ```
 
-> There is an official SQL standard that no product fully implements, and many subtly and someUmes irritatingly different dialects. We'll see the main variants of SQL.
+> There is an official SQL standard that no product fully implements, and many subtly and sometimes irritatingly different dialects. We'll see the main variants of SQL.
 
 - PostgreSQL
 - ORACLE
@@ -177,7 +177,7 @@ Table (and column) names must start with a leder (PostgreSQL tolerates an unders
 
 > The $ sign is also accepted, and some products allow #.
 
-> Note that names can sometimes be quoted between double quotes or square brackets, in which case spaces are allowed AND names become case-sensitive. Beder to avoid it.
+> Note that names can sometimes be quoted between double quotes or square brackets, in which case spaces are allowed AND names become case-sensitive. Better to avoid it.
 
 ```sql
 create table table_name
@@ -244,12 +244,12 @@ RAW in Oracle, and VARBINARY (SQL Server) are the binary equivalent of VARCHAR.
 
 BLOB is the binary equivalent of CLOB (BLOB means Binary Large Object).
 
-PostgreSQL calls the binary datatype BYTEA, don't ask me why.
+PostgreSQL calls the binary datatype `BYTEA`, don't ask me why.
 
 ## `NULL`
 
 It indicates the absence of a value, because we don't yet
-know it, or because in that case the adribute is irrelevant, or because we haven't the slightest idea about what this should be.
+know it, or because in that case the attribute is irrelevant, or because we haven't the slightest idea about what this should be.
 
 **For more on `NULL`, see Lecture 3.**
 
@@ -264,7 +264,9 @@ create table people ( peopleid int not null,
 ## Comments
 ```sql
 comment on column people.surname is 'Surname or stage name';
+-- Stored in the database
 -- comments in an SQL statement start with a double dash
+-- Not usually stored in the database
 ```
 
 ## Constraints
@@ -285,13 +287,13 @@ create table people ( peopleid int not null
 ### `PRIMARY KEY`
 `PRIMARY KEY` indicates two things:
 
-1. The value is mandatory (the additional NOT NULL doesn't hurt but is redundant).
+1. The value is mandatory (the additional `NOT NULL` doesn't hurt but is redundant).
 2. The values are unique (no duplicates allowed in the column).
 
 ### `UNIQUE`
 
 With many products data **is** case sensitive and different
-capitalizaUon means different values that wouldn't violate a
+capitalization means different values that wouldn't violate a
 uniqueness constraint. You **must** standardize case. eg. Oracle, PostgreSQL and DB2.
 
 ### Referential Integrity
@@ -307,7 +309,7 @@ create table movies (movieid    int not null primary key,
                               references countryies(country_code))
 ```
 
-A foreign key can be composed of a combinaUon of columns (rare).
+A foreign key can be composed of a combination of columns (rare).
 
 Note that **the constraint works both ways**.
 
@@ -993,7 +995,7 @@ select * from (
   order by born
 )
 where rownum <= 3
--- Relational again.  
+-- Relational again.
 -- Just the fact that you have three of the oldest people born in 1970 or later.
 ```
 
