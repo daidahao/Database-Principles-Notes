@@ -542,7 +542,7 @@ having min(year_released) < 1940
 
 `where country = 'us'` is way more efficient.
 
-> When you apply a function or operators to a null, with very few exceptions the result is null because the result of a transformation applied to something unknown is an unknown quantity.
+When you apply a function or operators to a null, with very few exceptions the result is null because the result of a transformation applied to something unknown is an unknown quantity.
 
 **Aggregate functions ignore `NULL`s.**
 
@@ -644,7 +644,7 @@ on p.peopleid = c.peopleid
 
 ## Filtering and Qualifying
 
-An outer join is always a qualifying join, unless it is associated with an IS `NULL` condiIon, meaning that not finding a match is significant.
+An outer join is always a qualifying join, unless it is associated with an `IS NULL` condiIon, meaning that not finding a match is significant.
 
 If a join is removed, MORE rows?
 
@@ -759,7 +759,7 @@ Some products (Oracle, DB2, PostgreSQL with some twisting) even allow comparing 
            where ...)
 ```
 
-`IN()` means an implicit DISTINCT in the subquery.
+**`IN()` means an implicit DISTINCT in the subquery.**
 
 If **demonstrably unique**, no `distinct` wtih a `JOIN` (no need with a `IN()`).
 
