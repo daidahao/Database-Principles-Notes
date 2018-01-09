@@ -770,7 +770,27 @@ If **demonstrably unique**, no `distinct` wtih a `JOIN` (no need with a `IN()`).
 ### `NULL`s
 
 ```sql
-select * from people where born >= 1970
+select * from people
+where born >= 1970
+  and first_name not in
+  (select first_name
+  from people
+  where born < 1970)
+```
+
+#### No data found!!! Why?
+
+`col in ('a', 'b', 'c') = (col = 'a' or col = 'b' or col = 'c')`
+
+Throw a `NULL` in, we have a condition that is never true but because of `OR` it can just be ignored.
+
+`col = NULL` never true.
+
+A subquery that returns a `NULL `in a `NOT IN ()` will always give a false condition, and the result will vanish. If you want to be safe, you should add a condition saying that you DON'T WANT `NULL` values if they are possible.
+
+```sql
+select * from people
+where born >= 1970
   and first_name not in
   (select first_name
   from people
@@ -779,7 +799,7 @@ select * from people where born >= 1970
 ```
 
 ### `WHERE` Correlated Query
-Correlated queries in the WHERE clause are used with the `(NOT) EXISTS` construct.
+Correlated queries in the `WHERE` clause are used with the `(NOT) EXISTS` construct.
 
 **NEVER try to correlate an `IN()`!**
 
