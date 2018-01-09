@@ -424,7 +424,7 @@ select * from movies
   where upper(title) not like '%A%'
 ```
 
-> Not good to apply a function to a searched column.
+**Not good to apply a function to a searched column.**
 
 ### `NULL`
 The only way to test `NULL`.
@@ -452,7 +452,7 @@ case upper(color)
 end as color,
 ```
 
-NULL cannot be tested in a WHEN branch.
+`NULL` cannot be tested in a `WHEN` branch.
 
 ## Useful Functions
 
@@ -512,7 +512,7 @@ You can also group on several columns. Every column that isn't an aggregate func
 - `sum(col)`
 - `stddev()`
 
-> SQLite hasn't `stddev()`, which computes the standard deviaTon
+> SQLite hasn't `stddev()`, which computes the standard deviation
 
 ```sql
 select * from (
@@ -526,6 +526,10 @@ where oldest_movie < 1940
 
 ### `HAVING`
 
+The HAVING clause was added to SQL because the WHERE keyword could not be used with aggregate functions.
+
+--- [W3Schools](https://www.w3schools.com/sql/sql_having.asp)
+
 ```sql
 select country,
         min(year_released) oldest_movie
@@ -538,7 +542,7 @@ having min(year_released) < 1940
 
 `where country = 'us'` is way more efficient.
 
-> When you apply a funcTon or operators to a null, with very few exceptions the result is null because the result of a transformation applied to something unknown is an unknown quantity.
+> When you apply a function or operators to a null, with very few exceptions the result is null because the result of a transformation applied to something unknown is an unknown quantity.
 
 **Aggregate functions ignore `NULL`s.**
 
