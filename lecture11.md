@@ -1,5 +1,9 @@
 # Lecture 11
 
+## Next Generation Databases - Guy Harrison
+
+[Slides](lecture11/Guy_Harrison_Next_Generation_Databases.pdf)
+
 ## Distributed Transactions
 
 One big problem is with transactions that **involve several servers**. Remember that transactions are meant to be atomic operations (a principle challenged by NoSQL databases).
@@ -53,7 +57,9 @@ Production DBAs have a LOT of databases to care about. There are usually many in
 
 ### Development DBA
 
+## Lab 12
 
+[Slides](lecture11/LAB12_storage.pdf)
 
 
 
