@@ -1,25 +1,5 @@
 # Lecture 13
 
-Disaster Receovery
-
-Switch
-
-Diagnosis?
-
-Decision taking?
-
-Test recovery
-
-Logical vs Physical backup
-
-## Database hangs
-
-Deadlocks
-
-Indexes
-
-# Lecture 13
-
 ## Disaster Receovery
 
 ### To remember
