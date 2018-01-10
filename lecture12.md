@@ -31,11 +31,62 @@ In all products (other than SQLite, of course) you need to connect to a database
 
 Exception: IBM DB2
 
+### Authentication
+
+- By the OS (trusted connection)
+- By password
+- External (LDAP, Kerberos, etc.) [uncommon]
+
 ### Super-user account ("DBA account")
 
-In all DBMS products, a default super-user account (often called "DBA account") is automatically created with the database.
+In all DBMS products, a default super-user account (often called "DBA account") is automatically created with the database. (Called `root` in MySQL.)
 
-### `SYSTEM`
+#### MySQL
+
+```sql
+create user 'username'@'hostname' identified by 'a_password'
+create user 'username'@'%' identified by 'a_password'
+create user 'username'@'localhost'
+```
+
+From the root account you can create other user accounts, which can be restricted to access from specific machines (for instance the same machine, or a HTTP server).
+
+#### Oracle
+
+```sql
+create user username identified by a_password
+create user ops$username identified externally
+```
+
+In Oracle you can limit access from machines but elsewhere. If you want to tie a database account to OS account `xxx`, you create an account called `<prefix>xxx`. The default prefix is `OPS$` and can be set to an empty string.
+
+`grant create session to username`
+
+Note that with Oracle you won't be able to do anything with your account if you aren't ALSO given the right to create a session.
+
+#### PostgreSQL
+
+```sql
+create user username with password 'a_password'
+create role username with login password 'a_password'
+```
+
+In PostgreSQL a "user" is a role that has the right to login. Both statements are synonym.
+
+One default account, named `postgres`.
+
+#### SQL Server
+
+```sql
+create login 'domainname\loginname' from windows
+create login username with password 'a_password'
+```
+
+SQL Server leaves you the choice between pure Windows authentication, or classic username/ password authentication (you may want to access SQL Server through JDBC from a Linux machine).
+
+The default user is called `sa` (Super Administrator) but is deactivated. You can create accounts by connecting without any fuss from the administrator account from which you have installed the DBMS.
+
+### Privileges
 
 - System privileges
 
@@ -57,7 +108,7 @@ System privileges to create objects
 
 - Regular Users
 
-Minimum sysatem privileges + Object privileges
+Minimum system privileges + Object privileges
 
 **Don't grant privileges "just in case"**
 
@@ -70,29 +121,49 @@ Minimum sysatem privileges + Object privileges
 ### Developer Account
 
 - `grant create table to ...`
+  - `grant create index to ...` (MySQL)
+  - `grant create sequence to ...` (Oracle)
+  - `grant create trigger to ...` (Oracle)
 - `grant create procedure to ...`
+  - `grant create function to ...` (SQL Server)
 - `grant create view to ...`
 - `grant create type to ...`
+
+Usually limited to one database
+
+### IMPORTANT
 
 **default schema/database/tablespace**
 
 You should also define (especially when inexperienced developers) where their tables will be created by default. You want to keep application tables separate from system tables.
 
+Don't let developers "fix" things in production. Scripts that change structures in production should be tested and run by database administrators.
+
+**DEVELOPERS SHOULD NOT CONNECT TO PRODUCTION DATABASES.**
+
 ### Role
 
-As you don't want to repeat a long series of "GRANT" statements everytime a new hire must be given access to the database, you create a role, give all the privileges to the role (system and tables) and grant the role to users.
+As you don't want to repeat a long series of `GRANT` statements everytime a new hire must be given access to the database, you create a role, give all the privileges to the role (system and tables) and grant the role to users.
+
+`create role rank_and_file`
+
+`grant create session to rank_and_file`
+
+`grant rank_and_file to john_doe`
 
 ### Alias / Synonym
 
 Normally you are supposed to prefix table names with schema names. Don't do that.
 
-Use aliases (synonyms); they can be dropped and changed at will to point to different tables while running exactly the same queries.
+**Use aliases (synonyms)**: they can be dropped and changed at will to point to different tables while running exactly the same queries.
 
 `create synonym employees for hr.employees`
 
 `create synonym employees for training.employees`
 
 ### `PUBLIC`
+
+There is something special called `public` that means "everybody" (existing as well as future user accounts). Much used.
 
 ### Web Applications
 
@@ -108,7 +179,15 @@ As a general rule, don't give full DBA privileges to many people. There should o
 - Don't give unnecessary privileges
 - Entrust the happy few with high privileges
 
-Encryption
+Knowing WHO has high privileges, and holding them personally responsible is often better than paranoia.
+
+## Encryption
+
+- One-way encryption (md5, sha1)
+- Reversible encryption
+  - sensitive data (credit cards, and so forth)
+
+There may be issues with indexes (no range scan on an encrypted column).
 
 ## SECURITY ISSUES
 
@@ -119,9 +198,7 @@ Even log files may contain a lot of information
 
 - Check and remove unused defaults
 - PASSWORDS
-
-Same security standards for Production and Development.
-
+- Same security standards for Production and Development.
 - Try to keep track of connections
 
 ## BACKING UP A DATABASE
