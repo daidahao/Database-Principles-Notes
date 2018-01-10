@@ -336,7 +336,9 @@ Hardware or Software replication?
 
 There may be security issues if you don't encrypt your files.
 
+## Lab 13
 
+[Slides](lecture12/Lab13.pdf)
 
 
 
