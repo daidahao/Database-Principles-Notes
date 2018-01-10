@@ -35,11 +35,11 @@ slower than the expectations of the user
 
 slowness due to an increased load on the system
 
-Navie approach
-- More Hardware (Kill It With Iron approach)
+#### Navie approach
 
-Expensive, disruptive, often disappointing
+**More Hardware (Kill It With Iron approach)**
 
+- Expensive, disruptive, often disappointing
 - Adding indexes everywhere
 
 Useless indexes are far more common than missing indexes.
@@ -47,18 +47,20 @@ Useless indexes are far more common than missing indexes.
 - Can we tune the database? (Magic Parameter Dance)
 - What are the slow queries?
 
-Expectations
+#### Expectations
 
 - Slowness is a problem only when it could and should be fast.
 - You cannot aggregate 5 billion rows fast.
 
-Modeling?
+#### Modeling?
 
 If you spend your time aggegating data it’s perhaps that your database model isn’t suitable for what you want to do. Database design is very important for performance.
 
 ### Correct starting-point
 
-The correct approach is to find out **WHERE you have a problem; which is the resource that fails you**.
+The correct approach is to find out
+- **WHERE you have a problem;**
+- **Which is the resource that fails you**.
 
 #### Waits
 
@@ -92,14 +94,14 @@ The number of logical reads is the indicator that really counts. Logical reads a
 
 #### How to optimize queries that cannot be changed?
 
-- Don't do what isn't necessary
+- Don't do (Eliminate) what isn't necessary
 - Schedule at another time
 
 #### Parsing issues
 
 > When people hard-code search criteria in queries (concatenating constants in queries instead of using prepared statements with parameters), not only do they open the door to SQL injection but every query for which only constants are different appears as a new query that has to be parsed.
 
-Force substitution of constants by variables
+**Force substitution of constants by variables**
 
 Oracle, SQL Server
 
@@ -179,7 +181,7 @@ Most performance issues come from poor or careless (or both) development.
 
 ![](lecture13/eav.png)
 
-An EAV model will underestimate volumes and pick on indexes and algorithms that use indexes.
+An EAV model will underestimate volumes and pick on indexes and algorithms that use indexes. (That is to say, it will force the optimizer to use indexes.)
 
 Hence the benefit of "**extended statistics**" (which only the top products such as Oracle allow), not only to detect genuine correlation in the data (such as between "born" and "died") but also to try to correct artificial correlation introduced by the data model (because any value cannot be associated with any attribute).
 
@@ -232,7 +234,9 @@ Such an example is the Entity/Attribute/ Value (or EAV) model, which is supposed
 > Some clever SQL rewriting sometimes helps (to a limited extent), but usually people have been so clever with their EAV design that when they come to writing SQL they have exhausted all their cleverness.
 
 
+## Lab 14: Data Warehousing
 
+[Notes](data-warehousing.md)
 
 
 
