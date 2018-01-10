@@ -8,7 +8,7 @@
 
 Parsing takes time.
 
-Keep pearsed queries in memory.
+Keep parsed queries in memory.
 
 #### Query cache management
 
@@ -67,13 +67,56 @@ Assign to all connected users their own personal server process running SQL for 
 
 Pre-start (which makes connection slightly faster) a number of servers, and to assign requests to them with a bit of load-balancing.
 
-#### What about a session querying data being changed by another session?
+## What about a session querying data being changed by another session?
 
-**See slides.**
+The main problem is that a transaction can last "a certain time". You may need to run a lot of code before deciding on commit or rollback.
+
+```sql
+Begin Transaction
+
+Commit
+```
+
+During the transaction, the database will be in a kind of transient state of which you cannot say whether it will become permanent.
 
 CONSISTENT STATE
 
+Between two consistent states, you have a kind of black hole.
+
+### 4 levels for [ISOLATION](https://en.wikipedia.org/wiki/Isolation_(database_systems))
+
+The SQL standard defines four isolation levels, from no isolation at all to paranoid. Some products let you set it, others impose it.
+
+- ~~dirty reads~~
+- read committed
+- repeatable read
+- serialization
+
+> Let's see once again how a transaction works. You start it. Before applying any change the DBMS saves the value from before your transaction, in case you'd want to rollback. Then you commit (or rollback) and the value previously saved for rollback (in memory or on file) can be marked as disposable.
+
+#### ~~Read Uncommitted (dirty read)~~
+
+> If when a user is changing data another user were able to read the new value before being sure that there will be no rollback, we would run into problems pretty soon.
+
+#### Read Committed
+
+> But the "old" value belongs to a stable (committed) state of the database. What most DBMS products will do is that they will "serve" to the reader this value, at least known to be consistent and to have been once "official current value".
+
+#### Repeatable read
+
+Point-in-time read
+
+> However, once the writer has committed, in the read committed model whe should read the new, now official, value. It may be inconsistent with a previous read and we may favor consistency for the reader over timeliness.
+
 > In practice, the problem is more a problem of data consistency of foreign keys when we are scanning big related tables. A single SELECT will usually be consistent (a product such as Oracle ignores any change having happened since the start of the SELECT, even if it was committed). But if we SELECT twice (two different queries) from two tables with an FK relationship, changes that may have happened (and have been committed) between the time when we started reading the first table and the time when we were reading the second table may lead to problems such as orphaned rows.
+
+> Example: If I haven't read an uncommitted order when reading ORDER, then I should ignore rows refering to this order in ORDER_DETAIL even if they have been committed by the time I reach them.
+
+#### Serialization
+
+The last level is to block readers when data is being modified. Guaranteed to be consistent but bad for performances.
+
+When you have twowritersyou cannot do otherwise than locking.
 
 #### BACKUP ISSUES
 
