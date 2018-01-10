@@ -16,7 +16,42 @@ Least Recently Used (LRU)
 
 Checksum + check tables are same and context identical
 
-Selectivity?
+#### Binding queries
+
+To help cache queries, we should use parameters and "bind" them at run time. The text of the query is unchanged whichever name we attach to it.
+
+```sql
+select m.title, m.year_released
+from movies m
+     inner join credits c
+     on c.movieid = m.movieid
+     inner join people p
+     on p.peopleid = c.peopleid
+where p.first_name = :first_name
+  and p.surname = :surname
+  and c.credited_as = 'D'
+```
+
+And unfortunately you cannot bind a table or column name, nor (which would be quite useful) a whole list of values.
+
+```sql
+select ...
+from :my_table
+where col in (:user_list)
+order by :user_choice
+```
+
+#### Selectivity?
+
+The optimizer will base its decision on the values passed when the query is first parsed. Nothing guarantees that the decision will still be adequate with other parameter values.
+
+#### Cache Query Result
+
+More radical, Read Only/Slowly Changing
+
+Some products can go further than caching parsed queries and can even cache results associated with a query and its parameters.
+
+It's OK if the database is a read-only database or changes only very slowly (for instance, for a query such as retrieving the last articles in a blog).
 
 **SEVERAL problems**
 
