@@ -15,6 +15,7 @@ Notes for Database Principles Course at SUSTech, 2017 Fall.
 
 ## Table of Contents
 
+- [Lecture Index (Official Version)](index.pdf)
 - [Midterm](midterm-toc.md)
 
 ## PDF Versions
