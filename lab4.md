@@ -3,7 +3,7 @@
 今天花了一个下午改大家没有通过自动批改程序的Lab4，总结了一下大家普遍遇到的几个问题，希望大家下次能够避免。
 
 ### 1. 函数名字写错
-Lab4要求的是一个`script`函数，有不少同学函数名字写错了，写成了`script`或`identify`，SQL脚本可以正常执行，但是程序无法调用这个函数。
+Lab4要求的是一个`script`函数，有不少同学函数名字写错了，写成了`scriiipt`或`identify`，SQL脚本可以正常执行，但是程序无法调用这个函数。
 
 ### 2. 函数没有默认返回值
 函数的逻辑写对了，但是对于未知的情况，函数没有返回值。
@@ -13,12 +13,18 @@ SQL脚本虽然可以正常执行，但是程序在运行时，会在一个`test
 还有些同学返回的'Other'拼错，拼成了‘Others’或者'Ohter'，emmmmmm...
 
 ### 3. SQL脚本里包含`//`和查询语句
-很多同学的脚本里，包含了`//`分隔符。因为这个是我们自己定义的分隔符，但对于PostgreSQL来说是没有意义的，是不合法的，SQL脚本不能正常执行。还有同学的脚本里包含了用于测试的查询语句，这些都是没有必要的，而且很有可能导致脚本执行错误。
+很多同学的脚本里，包含了`//`分隔符。因为这个是我们自己定义的分隔符，但对于PostgreSQL来说是没有意义的，是不合法的，SQL脚本不能正常执行。
+
+还有同学的脚本里包含了用于测试的查询语句，这些都是没有必要的，而且很有可能导致脚本执行错误。
 
 例如`select script(titles) from alt_tables`，就可能因为缺少`alt_tables`出现错误。
 
 ### 4. 使用`DROP FUNCTION script(title varchar)`
-直接使用`DROP FUNCTION script(title varchar)`是不对的，且有可能导致不可预料的错误。第一，我们不知道script这个函数是否存在；第二，即便script存在，我们也不知道它的输入的变量名是不是title。第三，批改程序在执行脚本前，会删除script函数，我们没必要写到脚本里。如果一定要DROP FUNCTION，可以用`drop function if exists script(varchar)`。
+直接使用`DROP FUNCTION script(title varchar)`是不对的，且有可能导致不可预料的错误。
+
+第一，我们不知道script这个函数是否存在；第二，即便script存在，我们也不知道它的输入的变量名是不是title。第三，批改程序在执行脚本前，会删除script函数，我们没必要写到脚本里。
+
+如果一定要DROP FUNCTION，可以用`drop function if exists script(varchar)`。
 
 ### 5. SQL脚本没有以`.sql`作为后缀
 批改程序似乎只会执行`.sql`作为后缀的文件，但我手上没有程序，所以没法确认。
