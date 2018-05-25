@@ -1,5 +1,19 @@
 # Lab 4 批改情况
 
+Author: Zhihao Dai, Student Assistance
+
+Your grades for Lab 4 have been released. Since most submissions are graded by the program, if your function fails to pass the program, you will receive comments by me in red font and possibly an sql file attachment of the "fixed" version of the function, which I used to run against 20 test cases.
+
+If your function is graded by the program, you will not receive my comments in red font, but only comments produced by the program in black font.
+
+You may find all 20 test cases and their expected scripts name in file `sample.sql` and `answer.png` respectively under the directory `test case` on Sakai.
+
+For those whose submissions are graded by me (that is, receive comments in red font) and have questions regrarding the grades, please send an E-mail to 11510415@mail.sustc.edu.cn.
+
+For those with doubts whose submissions are grade by the program, please talk to TA in lab section next week.
+
+The following content is about several common problems I have encountered when grading your submissions manually and provided only in Chinese.
+
 今天花了一个下午改大家没有通过自动批改程序的Lab4，总结了一下大家普遍遇到的几个问题，希望大家下次能够避免。
 
 ### 1. 函数名字写错
@@ -65,10 +79,46 @@ from (
 ) test;
 ```
 
-测试用例（暂未公开）：
+测试用例（`sample.sql`）：
 ```sql
+create table test_table(id serial primary key,
+                        title varchar(100) unique);
+
+insert into test_table(title) values('चालबाज़');
+insert into test_table(title) values('Бриллиантовая рука');
+insert into test_table(title) values('Man Bites Dog');
+insert into test_table(title) values('జయభేర கலைவாணன');
+insert into test_table(title) values('Необычайные приключения мистера Веста в стране Большевиков');
+insert into test_table(title) values('ฝันบ้าคาราโอเกะ');
+insert into test_table(title) values('冷血十三鷹');
+insert into test_table(title) values('廣西電影製片廠');
+insert into test_table(title) values('歩いても 歩いても');
+insert into test_table(title) values('ᐊᑕᓈᕐᔪᐊᑦ');
+insert into test_table(title) values('4인용 식탁');
+insert into test_table(title) values('사람의 아들');
+insert into test_table(title) values('فروشنده');
+insert into test_table(title) values('엽기적인 그녀');
+insert into test_table(title) values('Börn náttúrunnar');
+insert into test_table(title) values('शोले');
+insert into test_table(title) values('邋遢大王奇遇记');
+insert into test_table(title) values('阿飛正傳');
+insert into test_table(title) values('ラスト・ブラッド');
+insert into test_table(title) values('I-4:Λούφα και Απαλλαγή');
 ```
 
-`script_ok`（暂未公开）：
-```sql
-```
+`script_ok`函数（暂未公开）：
+
+
+## FAQ
+
+1. 我的评语里没有红字，只有黑字的程序的输出，且没有标明扣分点，我想知道我的扣分点都有哪些？
+
+评语里面没有红字，表明你的作业是由老师的批改程序自动批改的。针对这种情况，你可以在提供的20个测试用例上，测试你写的函数。如果正确的比例和得分的比例相差比较大，你可以在下周的实验课上向TA提出异议。（如果给分高了，就不用找了。）
+
+2. 我的评语里有红字，但没有标明扣分点，我想知道我的扣分点都有哪些？
+
+评语里有红字的作业都是由手工我批改的，大部分都有标明详细扣分点，少部分还返回了我修改后的没有语法错误的脚本，但部分前期批改的没有标注扣分点。遇到这种情况，你可以直接给我的邮箱 11510415@mail.sustc.edu.cn 发邮件。
+
+3. 批改的评语 “There are multiple typos in your function ...”里的typo(s)指的是拼写错误吗？
+
+typo指的就是**语法错误**。因为Stephan原本要求有语法错误不能执行的，分数都要打对折，考虑到一次LAB的比重较大，为了避免过多的50分惨案，我都用typo指代语法错误，这样大家也能少扣点分。
